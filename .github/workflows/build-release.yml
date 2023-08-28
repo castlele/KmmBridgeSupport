@@ -22,59 +22,59 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          repository: premisedata/mobile-shared
-          path: mobile-shared
+          repository: castlele/KmmBridgeSupport
+          path: KmmBridgeSupport
 
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          repository: premisedata/mobile-shared-swift-package
-          path: mobile-shared-swift-package
+          repository: castlele/KmmBridgeSupportSwiftPackage
+          path: KmmBridgeSupportSwiftPackage
           token: ${{env.ACCESS_TOKEN}}
 
       - uses: actions/setup-java@v1
         with:
           java-version: ${{ env.JAVA_VERSION }}
 
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
+      # - uses: maxim-lobanov/setup-xcode@v1
+      #   with:
+      #     xcode-version: ${{ env.XCODE_VERSION }}
 
-      - name: Extract Version Info
-        run: |
-          cd mobile-shared
-          export ARTIFACT_VERSION=$(./gradlew properties | grep ^version: | cut -c 10-)
-          echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> $GITHUB_ENV
+      # - name: Extract Version Info
+      #   run: |
+      #     cd mobile-shared
+      #     export ARTIFACT_VERSION=$(./gradlew properties | grep ^version: | cut -c 10-)
+      #     echo "ARTIFACT_VERSION=$ARTIFACT_VERSION" >> $GITHUB_ENV
 
-      - name: Build Artifacts
-        uses: gradle/gradle-build-action@v1
-        with:
-          build-root-directory: mobile-shared
-          arguments: build createSwiftPackage
+      # - name: Build Artifacts
+      #   uses: gradle/gradle-build-action@v1
+      #   with:
+      #     build-root-directory: KmmBridgeSupport
+      #     arguments: build createSwiftPackage
 
-      - name: Publish JVM Artifacts
-        uses: gradle/gradle-build-action@v1
-        with:
-          build-root-directory: mobile-shared
-          arguments: artifactoryPublish artifactoryDeploy -PARTIFACTORY_URL=${{env.ARTIFACTORY_URL}} -PARTIFACTORY_REPO=${{env.ARTIFACTORY_REPO}} -PARTIFACTORY_USERNAME=${{env.ARTIFACTORY_USERNAME}} -PARTIFACTORY_PASSWORD=${{env.ARTIFACTORY_PASSWORD}}
+      # - name: Publish JVM Artifacts
+      #   uses: gradle/gradle-build-action@v1
+      #   with:
+      #     build-root-directory: KmmBridgeSupport
+      #     arguments: artifactoryPublish artifactoryDeploy -PARTIFACTORY_URL=${{env.ARTIFACTORY_URL}} -PARTIFACTORY_REPO=${{env.ARTIFACTORY_REPO}} -PARTIFACTORY_USERNAME=${{env.ARTIFACTORY_USERNAME}} -PARTIFACTORY_PASSWORD=${{env.ARTIFACTORY_PASSWORD}}
 
-      - name: Prepare iOS Artifacts
-        run: |
-          rm -f mobile-shared-swift-package/mobileshared-*
-          cp -r mobile-shared/shared/swiftpackage/* mobile-shared-swift-package
+      # - name: Prepare iOS Artifacts
+      #   run: |
+      #     rm -f mobile-shared-swift-package/mobileshared-*
+      #     cp -r mobile-shared/shared/swiftpackage/* mobile-shared-swift-package
 
-      - name: Publish iOS Artifacts
-        run: |
-          cd mobile-shared-swift-package
-          git add --all
-          git commit -m "Update to version ${{ env.ARTIFACT_VERSION }}"
-          git tag -a ${{ env.ARTIFACT_VERSION }} -m "mobile-shared v${{ env.ARTIFACT_VERSION }}"
-          git push
-          git push origin ${{ env.ARTIFACT_VERSION }}
+      # - name: Publish iOS Artifacts
+      #   run: |
+      #     cd mobile-shared-swift-package
+      #     git add --all
+      #     git commit -m "Update to version ${{ env.ARTIFACT_VERSION }}"
+      #     git tag -a ${{ env.ARTIFACT_VERSION }} -m "mobile-shared v${{ env.ARTIFACT_VERSION }}"
+      #     git push
+      #     git push origin ${{ env.ARTIFACT_VERSION }}
 
-      - name: Tag Release
-        run: |
-          cd mobile-shared
-          git tag -a ${{ env.ARTIFACT_VERSION }} -m "mobile-shared v${{ env.ARTIFACT_VERSION }}"
-          git push
-          git push origin ${{ env.ARTIFACT_VERSION }}
+      # - name: Tag Release
+      #   run: |
+      #     cd mobile-shared
+      #     git tag -a ${{ env.ARTIFACT_VERSION }} -m "mobile-shared v${{ env.ARTIFACT_VERSION }}"
+      #     git push
+      #     git push origin ${{ env.ARTIFACT_VERSION }}
